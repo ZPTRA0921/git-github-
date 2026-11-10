@@ -1,0 +1,3769 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#20523D">
+    <meta name="format-detection" content="telephone=no">
+    <title>老人药品助手</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%23FFFFFF'/%3E%3Ctext%20x='32'%20y='45'%20font-family='Microsoft%20YaHei,%20sans-serif'%20font-size='40'%20font-weight='700'%20text-anchor='middle'%20fill='%23000000'%3E%E8%8D%AF%3C/text%3E%3C/svg%3E">
+    <style>
+:root {
+    --green: #20523D;
+    --green-strong: #184331;
+    --green-medium: #2E7D5B;
+    --green-soft: #E7F2EB;
+    --yellow: #FFD166;
+    --yellow-deep: #F2C14E;
+    --bg: #F3F6F3;
+    --surface: #FFFFFF;
+    --text: #202823;
+    --muted: #68786E;
+    --line: #DDE7E0;
+    --red: #C62828;
+    --red-soft: #FFF0EF;
+    --red-line: #F0C4C1;
+    --amber: #A86506;
+    --amber-soft: #FFF7E4;
+    --amber-line: #F0D49A;
+    --shadow: 0 5px 20px rgba(28, 70, 49, .07);
+    --shadow-strong: 0 10px 28px rgba(20, 54, 38, .12);
+    --radius-lg: 18px;
+    --radius-md: 14px;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+body.editor-open,
+body.modal-open {
+    overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    border: 0;
+    background: none;
+    cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid #F0B93C;
+    outline-offset: 2px;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+svg {
+    width: 1em;
+    height: 1em;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.app-shell {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0 auto;
+    background: var(--bg);
+}
+
+.view {
+    width: 100%;
+}
+
+.home-view {
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: calc(14px + env(safe-area-inset-top)) 16px 16px;
+    background: var(--green);
+    color: #FFFFFF;
+    border-radius: 0 0 22px 22px;
+    box-shadow: 0 6px 24px rgba(16, 56, 38, .22);
+}
+
+.brand {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.brand-icon {
+    width: 44px;
+    height: 44px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    background: #FFFFFF;
+    color: #000000;
+    font-size: 27px;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 3px 10px rgba(10, 40, 26, .18);
+}
+
+.brand-copy {
+    min-width: 0;
+}
+
+.brand-copy h1 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: .3px;
+    white-space: nowrap;
+}
+
+.brand-copy p {
+    margin: 4px 0 0;
+    font-size: 11px;
+    line-height: 1.3;
+    color: #CBE2D5;
+    white-space: nowrap;
+}
+
+.emergency-button {
+    flex: none;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+    border-radius: 14px;
+    background: var(--red);
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(120, 16, 16, .25);
+    transition: transform .12s ease, background .12s ease;
+}
+
+.emergency-button:active {
+    transform: translateY(1px);
+    background: #A81F1F;
+}
+
+.page {
+    padding: 16px 16px calc(28px + env(safe-area-inset-bottom));
+}
+
+.location-filter {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-height: 68px;
+    margin-bottom: 12px;
+    padding: 11px 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.field-icon {
+    width: 40px;
+    height: 40px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    background: var(--green-soft);
+    color: var(--green);
+}
+
+.field-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.location-select-wrap {
+    min-width: 0;
+    flex: 1;
+}
+
+.location-select-wrap label {
+    display: block;
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.3;
+    margin-bottom: 2px;
+}
+
+.location-select-wrap select {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.45;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+}
+
+.select-chevron {
+    width: 24px;
+    height: 32px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    color: #809187;
+}
+
+.select-chevron svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 54px;
+    margin-bottom: 10px;
+    padding: 0 12px 0 15px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.search-box:focus-within {
+    border-color: var(--green-medium);
+    box-shadow: 0 0 0 3px rgba(46, 125, 91, .11);
+}
+
+.search-icon {
+    flex: none;
+    color: #688073;
+}
+
+.search-icon svg {
+    width: 21px;
+    height: 21px;
+    stroke-width: 2;
+}
+
+.search-box input {
+    flex: 1;
+    min-width: 0;
+    height: 52px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-size: 16px;
+    color: var(--text);
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.search-box input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.search-box input::placeholder {
+    color: #91A097;
+    font-weight: 500;
+}
+
+.clear-search {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #EDF3EF;
+    color: #6B7C71;
+    font-size: 21px;
+    line-height: 1;
+}
+
+.online-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 1px 10px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.online-dot {
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+    background: #9BA89F;
+}
+
+.online-hint.online .online-dot {
+    background: #3B8A63;
+}
+
+.online-hint.offline .online-dot {
+    background: #B6BDB8;
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 4px 0 15px;
+}
+
+.filter-chip {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0 6px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: var(--surface);
+    color: var(--green);
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(28, 70, 49, .03);
+    transition: background .14s ease, color .14s ease, border-color .14s ease;
+}
+
+.filter-chip b {
+    min-width: 21px;
+    height: 21px;
+    display: inline-grid;
+    place-items: center;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--green-soft);
+    color: var(--green);
+    font-size: 10.5px;
+    font-weight: 800;
+}
+
+.filter-chip.active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #FFFFFF;
+}
+
+.filter-chip.active b {
+    background: rgba(255, 255, 255, .2);
+    color: #FFFFFF;
+}
+
+.notice-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border: 1px solid var(--amber-line);
+    border-radius: 13px;
+    background: var(--amber-soft);
+    color: #78500A;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.notice-icon {
+    width: 21px;
+    height: 21px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--amber);
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.notice-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.notice-banner button {
+    flex: none;
+    min-height: 34px;
+    padding: 0 9px;
+    border-radius: 9px;
+    color: var(--amber);
+    font-size: 12px;
+    font-weight: 800;
+    background: rgba(255, 255, 255, .55);
+}
+
+.medicine-section {
+    margin-top: 2px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 0 2px;
+}
+
+.section-heading h2 {
+    margin: 0;
+    color: var(--green);
+    font-size: 21px;
+    line-height: 1.3;
+    font-weight: 800;
+}
+
+.section-heading span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.medicine-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.add-medicine-button {
+    width: 100%;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin: 0 0 14px;
+    border-radius: 14px;
+    background: var(--green-medium);
+    color: #FFFFFF;
+    font-size: 17px;
+    font-weight: 800;
+    box-shadow: 0 6px 16px rgba(46, 125, 91, .22);
+    transition: transform .12s ease, background .12s ease;
+}
+
+.add-medicine-button:active {
+    transform: translateY(1px);
+    background: #276F51;
+}
+
+.add-button-plus {
+    font-size: 22px;
+    line-height: 1;
+    margin-top: -2px;
+}
+
+.med-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+}
+
+.med-card.expired {
+    border-color: var(--red-line);
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F7 100%);
+}
+
+.med-card.expired::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--red);
+    border-radius: 20px 0 0 20px;
+    z-index: 2;
+}
+
+.card-main {
+    cursor: pointer;
+}
+
+.card-main:focus-visible {
+    outline: 3px solid #F0B93C;
+    outline-offset: -4px;
+    border-radius: 20px;
+}
+
+.card-photo {
+    position: relative;
+    width: 100%;
+    min-height: 150px;
+    max-height: 240px;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #EEF4EF;
+}
+
+.card-photo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.card-photo .thumb-label {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    padding: 4px 9px;
+    border-radius: 8px;
+    background: rgba(27, 42, 33, .72);
+    color: #FFFFFF;
+    font-size: 10.5px;
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+
+.card-photo-placeholder {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: #91A198;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.card-photo-placeholder svg {
+    width: 30px;
+    height: 30px;
+    stroke-width: 1.6;
+}
+
+.card-body {
+    padding: 13px 16px 14px;
+}
+
+.card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 9px;
+}
+
+.med-name {
+    min-width: 0;
+    margin: 0;
+    color: #1E2721;
+    font-size: 24px;
+    line-height: 1.3;
+    font-weight: 800;
+    letter-spacing: .1px;
+    overflow-wrap: anywhere;
+}
+
+.med-card.expired .med-name {
+    color: var(--red);
+}
+
+.status-badge {
+    flex: none;
+    margin-top: 3px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    line-height: 1.35;
+    font-weight: 800;
+    white-space: nowrap;
+    color: var(--green);
+    background: var(--green-soft);
+}
+
+.status-badge.expired {
+    color: #FFFFFF;
+    background: var(--red);
+}
+
+.status-badge.soon {
+    color: var(--amber);
+    background: var(--amber-soft);
+    border: 1px solid var(--amber-line);
+}
+
+.status-badge.normal {
+    color: #2F7757;
+    background: var(--green-soft);
+}
+
+.meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 9px;
+    color: #4F6156;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.meta-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
+}
+
+.meta-item svg {
+    width: 15px;
+    height: 15px;
+    flex: none;
+    margin-top: 1px;
+    color: #7E9185;
+    stroke-width: 1.9;
+}
+
+.meta-item strong {
+    color: #34463B;
+    font-weight: 700;
+}
+
+.meta-item span {
+    min-width: 0;
+}
+
+.pack-note {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 10px 0 0;
+    color: #65766B;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.pack-note strong {
+    color: #415448;
+    font-weight: 700;
+}
+
+.tap-hint {
+    margin: 8px 0 0;
+    color: #93A098;
+    font-size: 10.5px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.med-card.expired .tap-hint {
+    color: #C36863;
+}
+
+.card-actions {
+    display: flex;
+    gap: 9px;
+    padding: 12px 16px 15px;
+}
+
+.action-button {
+    flex: 1;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 10px;
+    border-radius: 12px;
+    background: var(--green-soft);
+    color: var(--green);
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform .12s ease, background .12s ease;
+}
+
+.action-button:active {
+    transform: translateY(1px);
+    background: #D7E9DE;
+}
+
+.action-button.voice {
+    background: var(--red-soft);
+    color: var(--red);
+}
+
+.action-button.voice:active {
+    background: #FFE0DD;
+}
+
+.action-button svg {
+    width: 17px;
+    height: 17px;
+    stroke-width: 1.9;
+}
+
+.empty-state {
+    padding: 32px 20px 28px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.empty-icon {
+    width: 72px;
+    height: 72px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 14px;
+    border-radius: 24px;
+    background: var(--green-soft);
+    color: var(--green-medium);
+}
+
+.empty-icon svg {
+    width: 36px;
+    height: 36px;
+    stroke-width: 1.55;
+}
+
+.empty-state h3 {
+    margin: 0;
+    color: var(--green);
+    font-size: 19px;
+    line-height: 1.4;
+    font-weight: 800;
+}
+
+.empty-state p {
+    margin: 8px auto 18px;
+    max-width: 300px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.empty-button {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 22px;
+    border-radius: 12px;
+    background: var(--green);
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.online-search-note {
+    margin: 12px auto 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.online-button {
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: 1px solid var(--green-medium);
+    background: #FFFFFF;
+    color: var(--green-medium);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.legal-note {
+    margin: 22px 8px 4px;
+    color: #89978E;
+    font-size: 10.5px;
+    line-height: 1.65;
+    text-align: center;
+}
+
+/* 编辑 / 新增页 */
+.editor-view {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+.editor-header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: calc(9px + env(safe-area-inset-top)) 12px 10px;
+    background: var(--green);
+    color: #FFFFFF;
+    box-shadow: 0 4px 18px rgba(16, 56, 38, .16);
+    z-index: 20;
+}
+
+.back-button {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .12);
+    color: #FFFFFF;
+}
+
+.back-button svg {
+    width: 26px;
+    height: 26px;
+    stroke-width: 2.2;
+}
+
+.editor-heading {
+    flex: 1;
+    min-width: 0;
+    padding-left: 2px;
+}
+
+.editor-heading h2 {
+    margin: 0;
+    font-size: 21px;
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.editor-heading p {
+    margin: 3px 0 0;
+    color: #C9E1D3;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.delete-link {
+    flex: none;
+    min-height: 44px;
+    padding: 0 7px;
+    color: #FFD1CC;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.editor-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 14px 14px 20px;
+}
+
+.form-card {
+    margin-bottom: 14px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.form-card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 13px;
+}
+
+.form-card-heading h3 {
+    margin: 0;
+    color: var(--green);
+    font-size: 17px;
+    line-height: 1.35;
+    font-weight: 800;
+}
+
+.form-card-heading p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.required-pill,
+.optional-pill {
+    flex: none;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: var(--green-soft);
+    color: var(--green);
+    font-size: 10.5px;
+    font-weight: 800;
+}
+
+.optional-pill {
+    background: #F0F4F1;
+    color: #7A8B80;
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.photo-tile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 152px;
+    aspect-ratio: 1 / 1.03;
+    padding: 0;
+    overflow: hidden;
+    border: 2px dashed #C7D9CE;
+    border-radius: 14px;
+    background: #F8FBF8;
+    color: var(--green);
+    transition: border-color .15s ease, background .15s ease;
+}
+
+.photo-tile.has-photo {
+    border-style: solid;
+    border-color: var(--line);
+    background: #EDF3EF;
+}
+
+.photo-tile:active {
+    background: #EDF5EF;
+}
+
+.photo-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px;
+    text-align: center;
+}
+
+.photo-empty svg {
+    width: 38px;
+    height: 38px;
+    color: #6E9B83;
+    stroke-width: 1.5;
+}
+
+.photo-empty-title {
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.photo-empty-sub {
+    color: #8B9B91;
+    font-size: 10px;
+    line-height: 1.35;
+}
+
+.photo-side-label {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    padding: 3px 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .92);
+    color: var(--green);
+    font-size: 10.5px;
+    line-height: 1.35;
+    font-weight: 800;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+}
+
+.photo-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.photo-retake {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    z-index: 2;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(25, 42, 32, .78);
+    color: #FFFFFF;
+    font-size: 10.5px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+.photo-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .86);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.storage-tile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 150px;
+    padding: 0;
+    overflow: hidden;
+    border: 2px dashed #C7D9CE;
+    border-radius: 14px;
+    background: #F8FBF8;
+    color: var(--green);
+}
+
+.storage-tile.has-photo {
+    border-style: solid;
+    border-color: var(--line);
+    background: #EDF3EF;
+}
+
+.storage-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 18px;
+    text-align: center;
+}
+
+.storage-empty svg {
+    width: 40px;
+    height: 40px;
+    color: #6E9B83;
+    stroke-width: 1.5;
+}
+
+.field-error {
+    margin: 7px 2px 0;
+    color: var(--red);
+    font-size: 11.5px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.form-field {
+    margin-bottom: 15px;
+}
+
+.form-field:last-child {
+    margin-bottom: 2px;
+}
+
+.form-field label {
+    display: block;
+    margin: 0 1px 7px;
+    color: #37483D;
+    font-size: 13.5px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.form-field label em {
+    color: var(--red);
+    font-style: normal;
+}
+
+.optional {
+    color: #8D9B92;
+    font-size: 10.5px;
+    font-weight: 500;
+}
+
+.form-field input,
+.form-field textarea {
+    display: block;
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 13px;
+    border: 1px solid #D7E2DA;
+    border-radius: 12px;
+    background: #F7FAF7;
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.5;
+    outline: none;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+    border-color: var(--green-medium);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(46, 125, 91, .1);
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+    color: #9AA89F;
+}
+
+.form-field input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+    min-height: 50px;
+    color-scheme: light;
+}
+
+.form-field input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: .62;
+    padding: 4px;
+}
+
+.form-field textarea {
+    min-height: 106px;
+    resize: none;
+}
+
+.field-hint {
+    margin: 5px 2px 0;
+    color: #87958C;
+    font-size: 10.5px;
+    line-height: 1.5;
+}
+
+.field-hint.hint-warn {
+    color: var(--red);
+}
+
+.field-hint.hint-soon {
+    color: var(--amber);
+}
+
+.editor-note {
+    margin: 2px 8px 4px;
+    color: #87958C;
+    font-size: 10.5px;
+    line-height: 1.65;
+    text-align: center;
+}
+
+.editor-footer {
+    flex: none;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: rgba(247, 250, 247, .97);
+    box-shadow: 0 -6px 22px rgba(28, 70, 49, .05);
+}
+
+.save-button {
+    width: 100%;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: var(--green-medium);
+    color: #FFFFFF;
+    font-size: 17px;
+    font-weight: 800;
+    box-shadow: 0 6px 16px rgba(46, 125, 91, .22);
+    transition: transform .12s ease, background .12s ease;
+}
+
+.save-button:active {
+    transform: translateY(1px);
+    background: #276F51;
+}
+
+.save-button:disabled {
+    background: #B8CDC0;
+    box-shadow: none;
+}
+
+/* 查看药品 */
+.detail-view {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+.detail-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 14px 14px 20px;
+}
+
+.detail-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.detail-hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 18px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.detail-hero.expired {
+    border-color: var(--red-line);
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF8F7 100%);
+}
+
+.detail-name {
+    min-width: 0;
+    margin: 0;
+    color: #1E2721;
+    font-size: 26px;
+    line-height: 1.3;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.detail-hero.expired .detail-name {
+    color: var(--red);
+}
+
+.detail-info {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.detail-info .meta-row {
+    margin-top: 0;
+}
+
+.detail-section {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.detail-section h3 {
+    margin: 0 0 12px;
+    color: var(--green);
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 800;
+}
+
+.detail-photo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.detail-photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: 120px;
+    aspect-ratio: 4 / 3;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #EEF4EF;
+}
+
+.detail-photo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.detail-photo-label {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    padding: 3px 8px;
+    border-radius: 8px;
+    background: rgba(27, 42, 33, .72);
+    color: #FFFFFF;
+    font-size: 11px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+.detail-storage-photo {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: 170px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #EEF4EF;
+}
+
+.detail-storage-photo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.detail-note {
+    margin: 0;
+    color: #4F6156;
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.detail-empty {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* 图片查看 */
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(9, 15, 11, .93);
+}
+
+.overlay-close {
+    position: absolute;
+    top: calc(12px + env(safe-area-inset-top));
+    right: 14px;
+    z-index: 2;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .14);
+    color: #FFFFFF;
+    font-size: 28px;
+    line-height: 1;
+}
+
+.viewer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 900px;
+}
+
+.viewer-content img {
+    display: block;
+    max-width: 100%;
+    max-height: 78vh;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #1A241E;
+}
+
+.viewer-content p {
+    margin: 0;
+    color: #D6E1DA;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* 弹窗 */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(16, 25, 20, .55);
+}
+
+.confirm-dialog {
+    width: 100%;
+    max-width: 340px;
+    padding: 21px 19px 17px;
+    border-radius: 18px;
+    background: #FFFFFF;
+    box-shadow: var(--shadow-strong);
+}
+
+.confirm-dialog h3 {
+    margin: 0;
+    color: var(--text);
+    font-size: 19px;
+    line-height: 1.4;
+    font-weight: 800;
+}
+
+.confirm-dialog p {
+    margin: 9px 0 19px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.emergency-dialog input {
+    width: 100%;
+    min-height: 50px;
+    margin-bottom: 18px;
+    padding: 12px 13px;
+    border: 1px solid #D7E2DA;
+    border-radius: 12px;
+    background: #F7FAF7;
+    color: var(--text);
+    font-size: 18px;
+    letter-spacing: 1px;
+    outline: none;
+}
+
+.emergency-dialog input:focus {
+    border-color: var(--green-medium);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(46, 125, 91, .1);
+}
+
+.confirm-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.confirm-actions button {
+    min-height: 48px;
+    border-radius: 11px;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.button-secondary {
+    background: #F0F4F1;
+    color: #52645A;
+}
+
+.button-danger {
+    background: var(--red);
+    color: #FFFFFF;
+}
+
+/* 轻提示 */
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(86px + env(safe-area-inset-bottom));
+    z-index: 200;
+    max-width: 88vw;
+    padding: 11px 16px;
+    border-radius: 12px;
+    background: rgba(31, 50, 40, .94);
+    color: #FFFFFF;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+    box-shadow: var(--shadow-strong);
+    transform: translateX(-50%);
+}
+
+/* 窄屏适配 */
+@media (max-width: 360px) {
+    .app-header {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .brand-copy h1 {
+        font-size: 20px;
+    }
+
+    .brand-copy p {
+        font-size: 10px;
+    }
+
+    .emergency-button {
+        min-height: 44px;
+        padding: 0 11px;
+        font-size: 14px;
+    }
+
+    .page {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .filter-chip {
+        gap: 3px;
+        font-size: 13px;
+    }
+
+    .filter-chip b {
+        min-width: 19px;
+        height: 19px;
+        padding: 0 5px;
+        font-size: 10px;
+    }
+
+    .med-name {
+        font-size: 22px;
+    }
+
+    .card-body {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .card-actions {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .editor-scroll {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .form-card {
+        padding: 14px;
+    }
+}
+
+@media (min-width: 760px) {
+    body {
+        background: #DFE8E2;
+    }
+
+    .app-shell {
+        box-shadow: 0 0 70px rgba(24, 60, 43, .14);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+</style>
+</head>
+<body>
+    <div class="app-shell">
+        <section id="homeView" class="view home-view">
+            <header class="app-header">
+                <div class="brand">
+                    <span class="brand-icon" aria-hidden="true">药</span>
+                    <div class="brand-copy">
+                        <h1>老人药品助手</h1>
+                        <p>药品照片 · 有效期提醒</p>
+                    </div>
+                </div>
+                <button type="button" class="emergency-button" id="emergencyButton" aria-label="紧急呼叫">紧急呼叫</button>
+            </header>
+
+            <main class="page home-page">
+                <div class="location-filter" id="locationFilterBox">
+                    <span class="field-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+                            <circle cx="12" cy="10" r="2.6" />
+                        </svg>
+                    </span>
+                    <div class="location-select-wrap">
+                        <label for="locationFilter">药品存放位置</label>
+                        <select id="locationFilter" aria-label="按药品存放位置筛选">
+                            <option value="">全部位置</option>
+                        </select>
+                    </div>
+                    <span class="select-chevron" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5" /></svg>
+                    </span>
+                </div>
+
+                <div class="search-box">
+                    <span class="search-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="10.8" cy="10.8" r="6.8" />
+                            <path d="m16 16 4.2 4.2" />
+                        </svg>
+                    </span>
+                    <input id="searchInput" type="search" placeholder="输入关键词：药名或位置" autocomplete="off" aria-label="药品关键词搜索" />
+                    <button type="button" class="clear-search" id="clearSearch" aria-label="清除搜索" hidden>×</button>
+                </div>
+
+                <div class="online-hint" id="onlineHint" hidden>
+                    <span class="online-dot"></span>
+                    <span id="onlineHintText">联网状态检查中</span>
+                </div>
+
+                <div class="filter-row" role="group" aria-label="药品状态筛选">
+                    <button type="button" class="filter-chip active" data-filter="all">
+                        <span>全部药品</span><b id="countAll">0</b>
+                    </button>
+                    <button type="button" class="filter-chip" data-filter="soon">
+                        <span>快过期</span><b id="countSoon">0</b>
+                    </button>
+                    <button type="button" class="filter-chip" data-filter="expired">
+                        <span>已过期</span><b id="countExpired">0</b>
+                    </button>
+                </div>
+
+                <div class="notice-banner" id="notificationBanner" hidden>
+                    <span class="notice-icon" aria-hidden="true">!</span>
+                    <span class="notice-text">手机通知未开启，过期时可能收不到提醒。</span>
+                    <button type="button" id="notificationButton">去开启</button>
+                </div>
+
+                <section class="medicine-section" aria-labelledby="myMedicineTitle">
+                    <div class="section-heading">
+                        <h2 id="myMedicineTitle">我的药品</h2>
+                        <span id="listSummary">共 0 种</span>
+                    </div>
+                    <button type="button" class="add-medicine-button" id="addButtonBottom">
+                        <span class="add-button-plus" aria-hidden="true">＋</span>
+                        <span>添加药品</span>
+                    </button>
+                    <div id="medicineList" class="medicine-list"></div>
+                </section>
+
+                <p class="legal-note">本软件只保存药品包装信息和有效期，不提供用药指导。<br>请以药品包装、医生或药师的说明为准。</p>
+            </main>
+        </section>
+
+        <section id="editorView" class="view editor-view" hidden>
+            <header class="editor-header">
+                <button type="button" class="back-button" id="backButton" aria-label="返回">
+                    <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+                <div class="editor-heading">
+                    <h2 id="editorTitle">添加药品</h2>
+                    <p>全方位拍照 · 手动补充信息</p>
+                </div>
+                <button type="button" class="delete-link" id="deleteButton" hidden>删除</button>
+            </header>
+
+            <div class="editor-scroll" id="editorScroll">
+                <section class="form-card photo-card">
+                    <div class="form-card-heading">
+                        <div>
+                            <h3>包装照片（全方位）</h3>
+                            <p>正面为必填，其余角度尽量拍全，字迹清楚</p>
+                        </div>
+                        <span class="required-pill">正面必填</span>
+                    </div>
+                    <div class="photo-grid">
+                        <button type="button" class="photo-tile" data-photo-key="pack-front" aria-label="拍摄药品包装正面">
+                            <span class="photo-side-label">正面</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄正面</span>
+                                <span class="photo-empty-sub">必填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装正面" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                        <button type="button" class="photo-tile" data-photo-key="pack-back" aria-label="拍摄药品包装背面">
+                            <span class="photo-side-label">背面</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄背面</span>
+                                <span class="photo-empty-sub">选填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装背面" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                        <button type="button" class="photo-tile" data-photo-key="pack-left" aria-label="拍摄药品包装左侧">
+                            <span class="photo-side-label">左侧</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄左侧</span>
+                                <span class="photo-empty-sub">选填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装左侧" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                        <button type="button" class="photo-tile" data-photo-key="pack-right" aria-label="拍摄药品包装右侧">
+                            <span class="photo-side-label">右侧</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄右侧</span>
+                                <span class="photo-empty-sub">选填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装右侧" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                        <button type="button" class="photo-tile" data-photo-key="pack-top" aria-label="拍摄药品包装顶部">
+                            <span class="photo-side-label">顶部</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄顶部</span>
+                                <span class="photo-empty-sub">选填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装顶部" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                        <button type="button" class="photo-tile" data-photo-key="pack-bottom" aria-label="拍摄药品包装底部">
+                            <span class="photo-side-label">底部</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄底部</span>
+                                <span class="photo-empty-sub">选填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装底部" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                    </div>
+                    <p class="field-error" id="photoError" hidden>请至少拍摄包装正面照片</p>
+                </section>
+
+                <section class="form-card">
+                    <div class="form-card-heading">
+                        <div>
+                            <h3>药品信息</h3>
+                            <p>根据包装手动补充，带 * 为必填</p>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nameInput">药品名称 <em>*</em></label>
+                        <input id="nameInput" type="text" maxlength="80" placeholder="请输入药品名称" autocomplete="off" />
+                        <p class="field-error" id="nameError" hidden>请填写药品名称</p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="locationInput">存放位置 <em>*</em></label>
+                        <input id="locationInput" type="text" maxlength="60" placeholder="例如：客厅电视柜第二层" autocomplete="off" />
+                        <p class="field-error" id="locationError" hidden>请填写药品存放位置</p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="expiryInput">有效期至 <em>*</em></label>
+                        <input id="expiryInput" type="date" min="2000-01-01" max="2100-12-31" />
+                        <p class="field-hint" id="dateHint">请按包装上的有效期填写</p>
+                        <p class="field-error" id="expiryError" hidden>请选择有效期</p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="notesInput">包装上的说明 <span class="optional">（照录，选填）</span></label>
+                        <textarea id="notesInput" maxlength="1000" rows="4" placeholder="只录入包装盒上的原文，不要自行添加用药建议"></textarea>
+                        <p class="field-hint">本软件不提供用药方法和指导。</p>
+                    </div>
+                </section>
+
+                <section class="form-card storage-card">
+                    <div class="form-card-heading">
+                        <div>
+                            <h3>存放位置照片</h3>
+                            <p>药品集体放在家庭药品箱时，可拍药品箱</p>
+                        </div>
+                        <span class="optional-pill">选填</span>
+                    </div>
+                    <button type="button" class="storage-tile" id="storageTile" data-photo-key="storage" aria-label="拍摄药品存放位置">
+                        <span class="storage-empty">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+                                <circle cx="12" cy="10" r="2.6" />
+                            </svg>
+                            <span class="photo-empty-title">拍摄存放位置 / 药品箱</span>
+                            <span class="photo-empty-sub">选填</span>
+                        </span>
+                        <img class="photo-image" alt="药品存放位置照片" hidden />
+                        <span class="photo-retake" hidden>重拍</span>
+                        <span class="photo-loading" hidden>处理中…</span>
+                    </button>
+                </section>
+
+                <p class="editor-note">
+                    照片和资料只保存在本机，不会上传网络。<br>
+                    过期提醒通过手机系统通知发送，不是短信。
+                </p>
+            </div>
+
+            <div class="editor-footer">
+                <button type="button" class="save-button" id="saveButton">保存药品</button>
+            </div>
+        </section>
+
+        <section id="detailView" class="view detail-view" hidden>
+            <header class="editor-header">
+                <button type="button" class="back-button" id="detailBack" aria-label="返回">
+                    <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+                <div class="editor-heading">
+                    <h2 id="detailTitle">查看药品</h2>
+                    <p id="detailSubtitle">包装照片与药品信息</p>
+                </div>
+            </header>
+            <div class="detail-scroll" id="detailScroll"></div>
+        </section>
+    </div>
+
+    <div class="overlay photo-viewer" id="photoViewer" hidden>
+        <button type="button" class="overlay-close" id="closePhotoViewer" aria-label="关闭照片">×</button>
+        <div class="viewer-content">
+            <img id="viewerImage" alt="药品包装照片" />
+            <p id="viewerCaption">药品包装照片</p>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="confirmModal" hidden>
+        <div class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+            <h3 id="confirmTitle">确认</h3>
+            <p id="confirmMessage"></p>
+            <div class="confirm-actions">
+                <button type="button" class="button-secondary" id="confirmCancel">取消</button>
+                <button type="button" class="button-danger" id="confirmOk">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="emergencyModal" hidden>
+        <div class="confirm-dialog emergency-dialog" role="dialog" aria-modal="true" aria-labelledby="emergencyTitle">
+            <h3 id="emergencyTitle">紧急呼叫</h3>
+            <p id="emergencyMessage">拨打紧急电话前，请确认号码正确。</p>
+            <input id="emergencyNumber" type="tel" inputmode="tel" maxlength="20" placeholder="请输入紧急电话号码" />
+            <div class="confirm-actions">
+                <button type="button" class="button-secondary" id="emergencyCancel">取消</button>
+                <button type="button" class="button-danger" id="emergencyOk">呼叫</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" hidden></div>
+
+    <input type="file" id="photoFileInput" accept="image/*" hidden />
+
+    <script>
+(function () {
+    'use strict';
+
+    var params = new URLSearchParams(window.location.search);
+    var DEMO = params.get('demo') === '1';
+    var android = window.Android || null;
+    var isNative = !!(android && typeof android.getData === 'function');
+
+    var PACK_LABELS = {
+        'pack-front': '正面',
+        'pack-back': '背面',
+        'pack-left': '左侧',
+        'pack-right': '右侧',
+        'pack-top': '顶部',
+        'pack-bottom': '底部'
+    };
+    var PACK_KEYS = ['pack-front', 'pack-back', 'pack-left', 'pack-right', 'pack-top', 'pack-bottom'];
+    var EMERGENCY_SETTING_KEY = 'emergency_number';
+    var EMERGENCY_DEFAULT = '120';
+
+    var state = {
+        meds: [],
+        filter: 'all',
+        query: '',
+        location: '',
+        editingId: null,
+        detailId: null,
+        draft: { photos: {}, storagePhoto: '' },
+        dirty: false,
+        saveInProgress: false,
+        pendingPhotoKey: null,
+        pendingBrowserKey: null,
+        photoTimeout: null,
+        confirmAction: null,
+        toastTimer: null,
+        online: null,
+        initialized: false,
+        emergencyNumber: EMERGENCY_DEFAULT
+    };
+
+    var dom = {};
+
+    var DB_NAME = 'elderMedicineApp';
+    var DB_VERSION = 2;
+    var DB_STORE = 'app';
+    var DB_KEY = 'medicines';
+    var LS_KEY = 'elderMedicineData';
+    var LS_EMERGENCY_KEY = 'elderMedicineEmergencyNumber';
+    var LS_REVIEW_KEY = 'elderMedicineLastReview';
+    var REVIEW_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
+    var browserDbPromise = null;
+
+    var pinyinCollator = new Intl.Collator('zh-Hans-CN', { sensitivity: 'accent', numeric: true });
+
+    var ICON_LOCATION = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+    var ICON_CALENDAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>';
+    var ICON_SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></svg>';
+    var ICON_CAMERA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="4"/></svg>';
+    var ICON_EMPTY = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="8" width="15" height="11" rx="4"/><path d="M8 8V6.5A2.5 2.5 0 0 1 10.5 4h3A2.5 2.5 0 0 1 16 6.5V8M9 13h6M12 10v6"/></svg>';
+
+    document.addEventListener('DOMContentLoaded', init);
+
+    function $(id) {
+        return document.getElementById(id);
+    }
+
+    function cacheDom() {
+        dom.homeView = $('homeView');
+        dom.addButtonBottom = $('addButtonBottom');
+        dom.emergencyButton = $('emergencyButton');
+        dom.locationFilter = $('locationFilter');
+        dom.searchInput = $('searchInput');
+        dom.clearSearch = $('clearSearch');
+        dom.onlineHint = $('onlineHint');
+        dom.onlineHintText = $('onlineHintText');
+        dom.countAll = $('countAll');
+        dom.countSoon = $('countSoon');
+        dom.countExpired = $('countExpired');
+        dom.notificationBanner = $('notificationBanner');
+        dom.notificationButton = $('notificationButton');
+        dom.medicineList = $('medicineList');
+        dom.listSummary = $('listSummary');
+
+        dom.editorView = $('editorView');
+        dom.editorScroll = $('editorScroll');
+        dom.backButton = $('backButton');
+        dom.editorTitle = $('editorTitle');
+        dom.deleteButton = $('deleteButton');
+        dom.detailView = $('detailView');
+        dom.detailBack = $('detailBack');
+        dom.detailTitle = $('detailTitle');
+        dom.detailSubtitle = $('detailSubtitle');
+        dom.detailScroll = $('detailScroll');
+        dom.photoError = $('photoError');
+        dom.nameInput = $('nameInput');
+        dom.nameError = $('nameError');
+        dom.locationInput = $('locationInput');
+        dom.locationError = $('locationError');
+        dom.expiryInput = $('expiryInput');
+        dom.expiryError = $('expiryError');
+        dom.dateHint = $('dateHint');
+        dom.notesInput = $('notesInput');
+        dom.saveButton = $('saveButton');
+        dom.storageTile = $('storageTile');
+        dom.photoFileInput = $('photoFileInput');
+
+        dom.photoViewer = $('photoViewer');
+        dom.closePhotoViewer = $('closePhotoViewer');
+        dom.viewerImage = $('viewerImage');
+        dom.viewerCaption = $('viewerCaption');
+
+        dom.confirmModal = $('confirmModal');
+        dom.confirmTitle = $('confirmTitle');
+        dom.confirmMessage = $('confirmMessage');
+        dom.confirmCancel = $('confirmCancel');
+        dom.confirmOk = $('confirmOk');
+
+        dom.emergencyModal = $('emergencyModal');
+        dom.emergencyNumber = $('emergencyNumber');
+        dom.emergencyCancel = $('emergencyCancel');
+        dom.emergencyOk = $('emergencyOk');
+
+        dom.toast = $('toast');
+    }
+
+    async function init() {
+        cacheDom();
+        bindEvents();
+
+        if (DEMO) {
+            state.meds = demoMeds();
+            renderAll();
+            hideNotificationBanner();
+            refreshOnlineState();
+            applyDemoView();
+        } else {
+            try {
+                state.meds = await loadInitialData();
+            } catch (error) {
+                console.error(error);
+                state.meds = [];
+                showToast('药品数据读取失败，请重新打开软件');
+            }
+            renderAll();
+            initNotificationBanner();
+            refreshOnlineState();
+            syncReminders(state.meds);
+            requestPersistentStorage();
+            loadEmergencyNumber();
+            runWeeklyReviewIfDue();
+        }
+
+        state.initialized = true;
+    }
+
+    function bindEvents() {
+        dom.addButtonBottom.addEventListener('click', function () {
+            openEditor(null);
+        });
+
+        dom.emergencyButton.addEventListener('click', openEmergencyModal);
+        dom.emergencyCancel.addEventListener('click', closeEmergencyModal);
+        dom.emergencyOk.addEventListener('click', callEmergencyNumber);
+        dom.emergencyModal.addEventListener('click', function (event) {
+            if (event.target === dom.emergencyModal) {
+                closeEmergencyModal();
+            }
+        });
+
+        document.querySelectorAll('.filter-chip').forEach(function (button) {
+            button.addEventListener('click', function () {
+                setFilter(button.dataset.filter);
+            });
+        });
+
+        dom.searchInput.addEventListener('input', function () {
+            state.query = dom.searchInput.value.trim();
+            dom.clearSearch.hidden = dom.searchInput.value.length === 0;
+            renderCardsOnly();
+        });
+
+        dom.clearSearch.addEventListener('click', function () {
+            dom.searchInput.value = '';
+            state.query = '';
+            dom.clearSearch.hidden = true;
+            dom.searchInput.focus();
+            renderCardsOnly();
+        });
+
+        dom.locationFilter.addEventListener('change', function () {
+            state.location = dom.locationFilter.value;
+            renderCardsOnly();
+        });
+
+        dom.medicineList.addEventListener('click', onMedicineListClick);
+        dom.medicineList.addEventListener('keydown', function (event) {
+            if (event.key !== 'Enter' && event.key !== ' ') {
+                return;
+            }
+            var main = event.target.closest('.card-main');
+            if (!main) {
+                return;
+            }
+            event.preventDefault();
+            var card = main.closest('.med-card');
+            if (card) {
+                handleCardTap(card.dataset.id);
+            }
+        });
+
+        document.querySelectorAll('[data-photo-key]').forEach(function (tile) {
+            tile.addEventListener('click', function () {
+                requestPhoto(tile.dataset.photoKey);
+            });
+        });
+
+        dom.photoFileInput.addEventListener('change', function (event) {
+            handleBrowserFile(event.target);
+        });
+
+        dom.backButton.addEventListener('click', requestCloseEditor);
+        dom.saveButton.addEventListener('click', saveCurrentMedicine);
+        dom.deleteButton.addEventListener('click', requestDeleteMedicine);
+        dom.detailBack.addEventListener('click', closeDetail);
+        dom.detailScroll.addEventListener('click', onDetailClick);
+
+        dom.nameInput.addEventListener('input', function () {
+            markDirty();
+            if (dom.nameInput.value.trim()) {
+                hideError(dom.nameError);
+            }
+        });
+        dom.locationInput.addEventListener('input', function () {
+            markDirty();
+            if (dom.locationInput.value.trim()) {
+                hideError(dom.locationError);
+            }
+        });
+        dom.expiryInput.addEventListener('change', function () {
+            markDirty();
+            updateDateHint();
+            if (dom.expiryInput.value) {
+                hideError(dom.expiryError);
+            }
+        });
+        dom.notesInput.addEventListener('input', markDirty);
+
+        dom.closePhotoViewer.addEventListener('click', closePhotoViewer);
+        dom.photoViewer.addEventListener('click', function (event) {
+            if (event.target === dom.photoViewer) {
+                closePhotoViewer();
+            }
+        });
+
+        dom.confirmCancel.addEventListener('click', closeConfirm);
+        dom.confirmOk.addEventListener('click', function () {
+            var action = state.confirmAction;
+            closeConfirm();
+            if (typeof action === 'function') {
+                action();
+            }
+        });
+
+        dom.notificationButton.addEventListener('click', function () {
+            if (isNative && typeof android.openNotificationSettings === 'function') {
+                android.openNotificationSettings();
+                window.setTimeout(refreshNotificationBanner, 900);
+                return;
+            }
+            if ('Notification' in window && typeof Notification.requestPermission === 'function') {
+                Notification.requestPermission().then(refreshNotificationBanner);
+            }
+        });
+
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) {
+                refreshNotificationBanner();
+                refreshOnlineState();
+                syncReminders(state.meds);
+            }
+        });
+        window.addEventListener('focus', function () {
+            refreshNotificationBanner();
+            refreshOnlineState();
+        });
+        window.addEventListener('online', refreshOnlineState);
+        window.addEventListener('offline', refreshOnlineState);
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key !== 'Escape') {
+                return;
+            }
+            if (!dom.photoViewer.hidden) {
+                closePhotoViewer();
+            } else if (!dom.emergencyModal.hidden) {
+                closeEmergencyModal();
+            } else if (!dom.confirmModal.hidden) {
+                closeConfirm();
+            } else if (!dom.detailView.hidden) {
+                closeDetail();
+            } else if (!dom.editorView.hidden) {
+                requestCloseEditor();
+            }
+        });
+    }
+
+    // ---------- 数据存储 ----------
+
+    function openBrowserDb() {
+        if (browserDbPromise) {
+            return browserDbPromise;
+        }
+        browserDbPromise = new Promise(function (resolve, reject) {
+            if (!window.indexedDB) {
+                reject(new Error('IndexedDB unavailable'));
+                return;
+            }
+            var request = window.indexedDB.open(DB_NAME, DB_VERSION);
+            request.onupgradeneeded = function (event) {
+                var db = event.target.result;
+                if (!db.objectStoreNames.contains(DB_STORE)) {
+                    db.createObjectStore(DB_STORE, { keyPath: 'key' });
+                }
+            };
+            request.onsuccess = function () { resolve(request.result); };
+            request.onerror = function () { reject(request.error || new Error('IndexedDB error')); };
+        });
+        return browserDbPromise;
+    }
+
+    async function loadBrowserData() {
+        try {
+            var db = await openBrowserDb();
+            var record = await new Promise(function (resolve, reject) {
+                var tx = db.transaction(DB_STORE, 'readonly');
+                var request = tx.objectStore(DB_STORE).get(DB_KEY);
+                request.onsuccess = function () { resolve(request.result); };
+                request.onerror = function () { reject(request.error); };
+            });
+            if (record && Array.isArray(record.value)) {
+                return record.value;
+            }
+        } catch (error) {
+            console.warn('IndexedDB read failed', error);
+        }
+
+        try {
+            var raw = window.localStorage.getItem(LS_KEY);
+            if (raw) {
+                return JSON.parse(raw);
+            }
+        } catch (error) {
+            console.warn('localStorage read failed', error);
+        }
+        return [];
+    }
+
+    async function saveBrowserData(meds) {
+        var saved = false;
+        try {
+            var db = await openBrowserDb();
+            await new Promise(function (resolve, reject) {
+                var tx = db.transaction(DB_STORE, 'readwrite');
+                tx.objectStore(DB_STORE).put({ key: DB_KEY, value: meds });
+                tx.oncomplete = function () { resolve(); };
+                tx.onerror = function () { reject(tx.error); };
+                tx.onabort = function () { reject(tx.error); };
+            });
+            saved = true;
+        } catch (error) {
+            console.warn('IndexedDB write failed', error);
+        }
+
+        try {
+            window.localStorage.setItem(LS_KEY, JSON.stringify(meds));
+            saved = true;
+        } catch (error) {
+            console.warn('localStorage write failed', error);
+        }
+
+        if (!saved) {
+            throw new Error('本机存储空间不足');
+        }
+    }
+
+    async function loadInitialData() {
+        if (isNative) {
+            var raw = android.getData();
+            return normalizeMeds(raw ? JSON.parse(raw) : []);
+        }
+        return normalizeMeds(await loadBrowserData());
+    }
+
+    async function persistMeds(meds) {
+        if (DEMO) {
+            return;
+        }
+        if (isNative) {
+            var ok = android.saveData(JSON.stringify(meds));
+            if (ok === false) {
+                throw new Error('本机保存失败');
+            }
+            return;
+        }
+        await saveBrowserData(meds);
+    }
+
+    function syncReminders(meds) {
+        if (!isNative || typeof android.syncReminders !== 'function') {
+            return;
+        }
+        try {
+            var reminders = meds.map(function (med) {
+                return { id: med.id, name: med.name, expiry: med.expiry };
+            });
+            android.syncReminders(JSON.stringify(reminders));
+        } catch (error) {
+            console.warn('reminder sync failed', error);
+        }
+    }
+
+    function runWeeklyReviewIfDue() {
+        var last = 0;
+        try {
+            last = Number(window.localStorage.getItem(LS_REVIEW_KEY)) || 0;
+        } catch (error) {
+            console.warn(error);
+        }
+        var now = Date.now();
+        if (last > 0 && now - last < REVIEW_INTERVAL_MS) {
+            return;
+        }
+        try {
+            window.localStorage.setItem(LS_REVIEW_KEY, String(now));
+        } catch (error) {
+            console.warn(error);
+        }
+
+        var expired = [];
+        var soon = [];
+        state.meds.forEach(function (med) {
+            var status = expiryStatus(med.expiry);
+            if (status.key === 'expired') {
+                expired.push(med);
+            } else if (status.key === 'soon') {
+                soon.push(med);
+            }
+        });
+
+        if (expired.length > 0) {
+            var names = expired.slice(0, 3).map(function (med) { return med.name; }).join('、');
+            if (expired.length > 3) {
+                names += ' 等 ' + expired.length + ' 种药品';
+            }
+            var message = '本周复查：' + names + ' 已过期，请勿食用';
+            showToast(message);
+            if (!isNative && 'Notification' in window && Notification.permission === 'granted') {
+                try {
+                    new Notification('药品过期提醒', { body: message });
+                } catch (error) {
+                    console.warn(error);
+                }
+            }
+        } else if (soon.length > 0) {
+            var soonNames = soon.slice(0, 3).map(function (med) { return med.name; }).join('、');
+            if (soon.length > 3) {
+                soonNames += ' 等 ' + soon.length + ' 种药品';
+            }
+            showToast('本周复查：' + soonNames + ' 即将过期，请留意');
+        }
+        syncReminders(state.meds);
+    }
+
+    function normalizeMeds(input) {
+        if (!Array.isArray(input)) {
+            return [];
+        }
+        var seen = {};
+        var result = [];
+        input.forEach(function (item) {
+            if (!item || typeof item !== 'object' || !item.name || !item.expiry) {
+                return;
+            }
+            var id = String(item.id || newId());
+            if (seen[id]) {
+                return;
+            }
+            seen[id] = true;
+            result.push({
+                id: id,
+                name: String(item.name).trim(),
+                location: String(item.location || '').trim() || '未填写',
+                expiry: String(item.expiry),
+                notes: String(item.notes || ''),
+                photos: normalizePhotos(item),
+                storagePhoto: typeof item.storagePhoto === 'string' ? item.storagePhoto : '',
+                createdAt: item.createdAt || new Date().toISOString(),
+                updatedAt: item.updatedAt || new Date().toISOString()
+            });
+        });
+        return result;
+    }
+
+    function normalizePhotos(item) {
+        if (Array.isArray(item.photos)) {
+            return item.photos.filter(function (photo) {
+                return photo && typeof photo.dataUrl === 'string' && photo.dataUrl;
+            }).map(function (photo) {
+                return {
+                    label: photo.label || '照片',
+                    dataUrl: photo.dataUrl
+                };
+            });
+        }
+        var photos = [];
+        if (typeof item.front === 'string' && item.front) {
+            photos.push({ label: '正面', dataUrl: item.front });
+        }
+        if (typeof item.back === 'string' && item.back) {
+            photos.push({ label: '背面', dataUrl: item.back });
+        }
+        return photos;
+    }
+
+    function newId() {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.crypto.randomUUID();
+        }
+        return 'med-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+    }
+
+    function requestPersistentStorage() {
+        try {
+            if (!isNative && navigator.storage && typeof navigator.storage.persist === 'function') {
+                navigator.storage.persist();
+            }
+        } catch (error) {
+            console.warn(error);
+        }
+    }
+
+    // ---------- 首页渲染 ----------
+
+    function renderAll() {
+        renderLocationOptions();
+        renderCounts();
+        renderFilterButtons();
+        renderCardsOnly();
+    }
+
+    function renderLocationOptions() {
+        var locations = [];
+        state.meds.forEach(function (med) {
+            if (med.location && locations.indexOf(med.location) === -1) {
+                locations.push(med.location);
+            }
+        });
+        locations.sort(function (a, b) { return pinyinCollator.compare(a, b); });
+
+        var current = state.location;
+        if (current && locations.indexOf(current) === -1) {
+            current = '';
+            state.location = '';
+        }
+
+        dom.locationFilter.innerHTML = '';
+        var all = document.createElement('option');
+        all.value = '';
+        all.textContent = '全部位置';
+        dom.locationFilter.appendChild(all);
+
+        locations.forEach(function (location) {
+            var option = document.createElement('option');
+            option.value = location;
+            option.textContent = location;
+            dom.locationFilter.appendChild(option);
+        });
+        dom.locationFilter.value = current;
+    }
+
+    function renderCounts() {
+        var counts = { all: state.meds.length, soon: 0, expired: 0 };
+        state.meds.forEach(function (med) {
+            var status = expiryStatus(med.expiry);
+            if (status.key === 'expired') {
+                counts.expired += 1;
+            } else if (status.key === 'soon') {
+                counts.soon += 1;
+            }
+        });
+        dom.countAll.textContent = String(counts.all);
+        dom.countSoon.textContent = String(counts.soon);
+        dom.countExpired.textContent = String(counts.expired);
+    }
+
+    function renderFilterButtons() {
+        document.querySelectorAll('.filter-chip').forEach(function (button) {
+            button.classList.toggle('active', button.dataset.filter === state.filter);
+        });
+    }
+
+    function setFilter(filter) {
+        state.filter = filter || 'all';
+        renderFilterButtons();
+        renderCardsOnly();
+    }
+
+    function renderCardsOnly() {
+        var filtered = filteredMeds();
+        var hasAnyFilters = state.filter !== 'all' || state.query.length > 0 || state.location.length > 0;
+        dom.listSummary.textContent = hasAnyFilters
+            ? '找到 ' + filtered.length + ' 种'
+            : '共 ' + state.meds.length + ' 种';
+
+        if (state.meds.length === 0) {
+            dom.medicineList.innerHTML = emptyStateHtml(false);
+            return;
+        }
+        if (filtered.length === 0) {
+            dom.medicineList.innerHTML = emptyStateHtml(true);
+            return;
+        }
+        dom.medicineList.innerHTML = filtered.map(cardHtml).join('');
+    }
+
+    function filteredMeds() {
+        var query = state.query.toLowerCase();
+        var location = state.location;
+        var filter = state.filter;
+
+        var list = state.meds.filter(function (med) {
+            var status = expiryStatus(med.expiry);
+            if (filter === 'expired' && status.key !== 'expired') {
+                return false;
+            }
+            if (filter === 'soon' && status.key !== 'soon') {
+                return false;
+            }
+            if (location && med.location !== location) {
+                return false;
+            }
+            if (query) {
+                var tokens = query.split(/\s+/).filter(Boolean);
+                var haystack = (med.name + ' ' + med.location + ' ' + med.notes).toLowerCase();
+                for (var t = 0; t < tokens.length; t++) {
+                    if (haystack.indexOf(tokens[t]) === -1) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
+
+        // 按药品名称首字母（拼音）排列
+        list.sort(function (a, b) {
+            return pinyinCollator.compare(a.name, b.name);
+        });
+        return list;
+    }
+
+    function emptyStateHtml(filtered) {
+        if (!filtered) {
+            return '<div class="empty-state">' +
+                '<div class="empty-icon">' + ICON_EMPTY + '</div>' +
+                '<h3>还没有药品记录</h3>' +
+                '<p>点下方“添加药品”，全方位拍下包装盒，记好有效期和存放位置。</p>' +
+                '</div>';
+        }
+
+        var onlineBlock = '';
+        if (state.query) {
+            var queryText = escapeHtml(state.query);
+            if (state.online) {
+                onlineBlock = '<p class="online-search-note">本地未找到「' + queryText + '」。可联网查询国家药品监督管理局发布的官方药品信息。</p>' +
+                    '<button type="button" class="online-button" data-online-search="' + queryText + '">联网查询官方药品信息</button>';
+            } else {
+                onlineBlock = '<p class="online-search-note">本地未找到「' + queryText + '」。当前离线，联网后可查询未入库药品的官方信息。</p>';
+            }
+        }
+
+        return '<div class="empty-state">' +
+            '<div class="empty-icon">' + ICON_EMPTY + '</div>' +
+            '<h3>没有找到符合条件的药品</h3>' +
+            '<p>可以换个关键词，或清除筛选条件查看全部药品。</p>' +
+            '<button type="button" class="empty-button" data-empty="reset">清除筛选</button>' +
+            onlineBlock +
+            '</div>';
+    }
+
+    function mainPhotoOf(med) {
+        var photos = med.photos || [];
+        for (var i = 0; i < photos.length; i++) {
+            if (photos[i].label === '正面') {
+                return photos[i].dataUrl;
+            }
+        }
+        return photos.length > 0 ? photos[0].dataUrl : '';
+    }
+
+    function cardHtml(med) {
+        var status = expiryStatus(med.expiry);
+        var name = escapeHtml(med.name);
+        var id = escapeHtml(med.id);
+        var notes = (med.notes || '').trim();
+        var notePreview = notes.length > 90 ? notes.slice(0, 90) + '…' : notes;
+        var mainPhoto = mainPhotoOf(med);
+        var photoHtml = mainPhoto
+            ? '<img src="' + escapeHtml(mainPhoto) + '" alt="' + name + '包装正面照片" loading="lazy">'
+            : '<span class="card-photo-placeholder">' + ICON_CAMERA + '<span>包装正面照片</span></span>';
+        var photoCount = (med.photos || []).length;
+        var photoCountHtml = photoCount > 0
+            ? '<span class="thumb-label">共 ' + photoCount + ' 张包装照片</span>'
+            : '';
+
+        return '<article class="med-card ' + status.key + '" data-id="' + id + '">' +
+            '<div class="card-main" tabindex="0" aria-label="' + name + '，' + escapeHtml(status.badge) + '">' +
+                '<div class="card-photo">' + photoHtml + photoCountHtml + '</div>' +
+                '<div class="card-body">' +
+                    '<div class="card-top">' +
+                        '<h3 class="med-name">' + name + '</h3>' +
+                        '<span class="status-badge ' + status.key + '">' + escapeHtml(status.badge) + '</span>' +
+                    '</div>' +
+                    '<div class="meta-row">' +
+                        '<div class="meta-item">' + ICON_LOCATION + '<span><strong>存放位置：</strong>' + escapeHtml(med.location) + '</span></div>' +
+                        '<div class="meta-item">' + ICON_CALENDAR + '<span><strong>有效期至：</strong>' + formatDate(med.expiry) + '</span></div>' +
+                    '</div>' +
+                    (notes ? '<p class="pack-note"><strong>包装说明：</strong>' + escapeHtml(notePreview) + '</p>' : '') +
+                    '<p class="tap-hint">' + (status.key === 'expired' ? '点击卡片：语音提醒已过期' : '点击卡片：播报药品信息') + '</p>' +
+                '</div>' +
+            '</div>' +
+            '<div class="card-actions">' +
+                '<button type="button" class="action-button" data-action="view" data-id="' + id + '">查看</button>' +
+                '<button type="button" class="action-button" data-action="edit" data-id="' + id + '">修改</button>' +
+            '</div>' +
+            '</article>';
+    }
+
+    function onMedicineListClick(event) {
+        var onlineButton = event.target.closest('[data-online-search]');
+        if (onlineButton) {
+            event.preventDefault();
+            openOfficialSearch(onlineButton.dataset.onlineSearch);
+            return;
+        }
+
+        var emptyButton = event.target.closest('[data-empty]');
+        if (emptyButton) {
+            if (emptyButton.dataset.empty === 'reset') {
+                resetFilters();
+            }
+            return;
+        }
+
+        var actionButton = event.target.closest('[data-action]');
+        if (actionButton) {
+            event.preventDefault();
+            event.stopPropagation();
+            var actionMed = findMed(actionButton.dataset.id);
+            if (!actionMed) {
+                return;
+            }
+            if (actionButton.dataset.action === 'view') {
+                openDetail(actionMed);
+            } else if (actionButton.dataset.action === 'edit') {
+                openEditor(actionMed);
+            }
+            return;
+        }
+
+        var main = event.target.closest('.card-main');
+        if (main) {
+            var card = main.closest('.med-card');
+            if (card) {
+                handleCardTap(card.dataset.id);
+            }
+        }
+    }
+
+    function handleCardTap(id) {
+        var med = findMed(id);
+        if (!med) {
+            return;
+        }
+        speakMedicine(med);
+    }
+
+    function resetFilters() {
+        state.filter = 'all';
+        state.query = '';
+        state.location = '';
+        dom.searchInput.value = '';
+        dom.clearSearch.hidden = true;
+        dom.locationFilter.value = '';
+        renderFilterButtons();
+        renderCardsOnly();
+    }
+
+    // ---------- 状态与日期 ----------
+
+    function expiryStatus(expiry) {
+        var days = daysUntil(expiry);
+        if (days === null) {
+            return { key: 'normal', days: null, badge: '有效期未填写' };
+        }
+        if (days < 0) {
+            return { key: 'expired', days: days, badge: '已过期 ' + (-days) + ' 天' };
+        }
+        if (days === 0) {
+            return { key: 'soon', days: 0, badge: '今天到期' };
+        }
+        if (days <= 30) {
+            return { key: 'soon', days: days, badge: '还有 ' + days + ' 天' };
+        }
+        return { key: 'normal', days: days, badge: '正常' };
+    }
+
+    function daysUntil(expiry) {
+        var parts = String(expiry || '').split('-');
+        if (parts.length !== 3) {
+            return null;
+        }
+        var year = Number(parts[0]);
+        var month = Number(parts[1]);
+        var day = Number(parts[2]);
+        if (!year || !month || !day) {
+            return null;
+        }
+        var now = new Date();
+        var todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+        var expiryUtc = Date.UTC(year, month - 1, day);
+        if (isNaN(expiryUtc)) {
+            return null;
+        }
+        return Math.round((expiryUtc - todayUtc) / 86400000);
+    }
+
+    function formatDate(expiry) {
+        var parts = String(expiry || '').split('-');
+        if (parts.length !== 3) {
+            return escapeHtml(expiry || '');
+        }
+        return escapeHtml(Number(parts[0]) + '年' + Number(parts[1]) + '月' + Number(parts[2]) + '日');
+    }
+
+    function formatInputDate(date) {
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+
+    // ---------- 添加 / 编辑 ----------
+
+    function openEditor(med) {
+        state.editingId = med ? med.id : null;
+        state.draft.photos = {};
+        state.draft.storagePhoto = '';
+        state.dirty = false;
+        state.saveInProgress = false;
+
+        if (med && Array.isArray(med.photos)) {
+            var used = {};
+            med.photos.forEach(function (photo) {
+                var label = photo.label || '';
+                var key = labelToKey(label);
+                if (key && !used[key]) {
+                    state.draft.photos[key] = photo.dataUrl;
+                    used[key] = true;
+                }
+            });
+        }
+        state.draft.storagePhoto = med && med.storagePhoto ? med.storagePhoto : '';
+
+        dom.editorTitle.textContent = med ? '修改药品' : '添加药品';
+        dom.deleteButton.hidden = !med;
+
+        dom.nameInput.value = med ? med.name : '';
+        dom.locationInput.value = med ? med.location : '';
+        dom.expiryInput.value = med ? med.expiry : '';
+        dom.notesInput.value = med ? med.notes : '';
+
+        hideError(dom.photoError);
+        hideError(dom.nameError);
+        hideError(dom.locationError);
+        hideError(dom.expiryError);
+        updateDateHint();
+
+        PACK_KEYS.forEach(function (key) {
+            updatePhotoTile(key);
+            resetPhotoLoading(key);
+        });
+        updatePhotoTile('storage');
+        resetPhotoLoading('storage');
+
+        dom.saveButton.disabled = false;
+        dom.saveButton.textContent = '保存药品';
+
+        dom.homeView.hidden = true;
+        dom.editorView.hidden = false;
+        document.body.classList.add('editor-open');
+        dom.editorScroll.scrollTop = 0;
+    }
+
+    function closeEditor() {
+        dom.editorView.hidden = true;
+        dom.homeView.hidden = false;
+        document.body.classList.remove('editor-open');
+        state.editingId = null;
+        state.draft = { photos: {}, storagePhoto: '' };
+        state.dirty = false;
+        state.saveInProgress = false;
+        renderAll();
+    }
+
+    function requestCloseEditor() {
+        if (dom.editorView.hidden) {
+            return;
+        }
+        if (!state.dirty) {
+            closeEditor();
+            return;
+        }
+        showConfirm({
+            title: '放弃未保存的内容？',
+            message: '当前填写的信息和照片还没有保存。',
+            okText: '放弃',
+            cancelText: '继续填写',
+            onOk: closeEditor
+        });
+    }
+
+    function markDirty() {
+        state.dirty = true;
+    }
+
+    function labelToKey(label) {
+        for (var key in PACK_LABELS) {
+            if (PACK_LABELS.hasOwnProperty(key) && PACK_LABELS[key] === label) {
+                return key;
+            }
+        }
+        return '';
+    }
+
+    function requestPhoto(key) {
+        if (isNative && typeof android.pickPhoto === 'function') {
+            if (state.pendingPhotoKey) {
+                return;
+            }
+            state.pendingPhotoKey = key;
+            setPhotoLoading(key, true);
+            try {
+                android.pickPhoto(key);
+                state.photoTimeout = window.setTimeout(function () {
+                    if (state.pendingPhotoKey === key) {
+                        state.pendingPhotoKey = null;
+                        setPhotoLoading(key, false);
+                        showToast('没有收到照片，请重试');
+                    }
+                }, 90000);
+            } catch (error) {
+                state.pendingPhotoKey = null;
+                setPhotoLoading(key, false);
+                showToast('无法打开相机，请重试');
+            }
+            return;
+        }
+
+        state.pendingBrowserKey = key;
+        dom.photoFileInput.value = '';
+        dom.photoFileInput.click();
+    }
+
+    async function handleBrowserFile(input) {
+        var file = input.files && input.files[0];
+        input.value = '';
+        var key = state.pendingBrowserKey;
+        state.pendingBrowserKey = null;
+        if (!file || !key) {
+            return;
+        }
+        setPhotoLoading(key, true);
+        try {
+            var dataUrl = await compressImageFile(file);
+            applyPhoto(key, dataUrl);
+        } catch (error) {
+            console.error(error);
+            showToast('照片读取失败，请换一张图片');
+        } finally {
+            setPhotoLoading(key, false);
+        }
+    }
+
+    function compressImageFile(file) {
+        return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onerror = function () { reject(new Error('read error')); };
+            reader.onload = function () {
+                var image = new Image();
+                image.onerror = function () { reject(new Error('image error')); };
+                image.onload = function () {
+                    var maxSide = 1600;
+                    var width = image.naturalWidth || image.width;
+                    var height = image.naturalHeight || image.height;
+                    var scale = Math.min(1, maxSide / Math.max(width, height));
+                    var canvas = document.createElement('canvas');
+                    canvas.width = Math.max(1, Math.round(width * scale));
+                    canvas.height = Math.max(1, Math.round(height * scale));
+                    var ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                    try {
+                        resolve(canvas.toDataURL('image/jpeg', 0.82));
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                image.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function applyPhoto(key, dataUrl) {
+        if (key === 'storage') {
+            state.draft.storagePhoto = dataUrl;
+        } else {
+            state.draft.photos[key] = dataUrl;
+        }
+        updatePhotoTile(key);
+        markDirty();
+        if (state.draft.photos['pack-front']) {
+            hideError(dom.photoError);
+        }
+    }
+
+    function updatePhotoTile(key) {
+        var tile = document.querySelector('[data-photo-key="' + key + '"]');
+        if (!tile) {
+            return;
+        }
+        var preview = tile.querySelector('.photo-image');
+        var retake = tile.querySelector('.photo-retake');
+        var empty = tile.querySelector('.photo-empty') || tile.querySelector('.storage-empty');
+        var dataUrl = key === 'storage' ? state.draft.storagePhoto : state.draft.photos[key];
+
+        tile.classList.toggle('has-photo', !!dataUrl);
+        if (dataUrl) {
+            preview.src = dataUrl;
+            preview.hidden = false;
+            empty.hidden = true;
+            retake.hidden = false;
+        } else {
+            preview.removeAttribute('src');
+            preview.hidden = true;
+            empty.hidden = false;
+            retake.hidden = true;
+        }
+    }
+
+    function setPhotoLoading(key, loading) {
+        var tile = document.querySelector('[data-photo-key="' + key + '"]');
+        if (!tile) {
+            return;
+        }
+        var indicator = tile.querySelector('.photo-loading');
+        indicator.hidden = !loading;
+        tile.disabled = !!loading;
+        tile.setAttribute('aria-busy', loading ? 'true' : 'false');
+    }
+
+    function resetPhotoLoading(key) {
+        setPhotoLoading(key, false);
+        if (state.photoTimeout) {
+            window.clearTimeout(state.photoTimeout);
+            state.photoTimeout = null;
+        }
+    }
+
+    function updateDateHint() {
+        var value = dom.expiryInput.value;
+        dom.dateHint.classList.remove('hint-warn', 'hint-soon');
+        if (!value) {
+            dom.dateHint.textContent = '请按包装上的有效期填写';
+            return;
+        }
+        var days = daysUntil(value);
+        if (days === null) {
+            dom.dateHint.textContent = '请填写正确的有效期';
+            dom.dateHint.classList.add('hint-warn');
+            return;
+        }
+        if (days < 0) {
+            dom.dateHint.textContent = '这个日期已经过期（已过期 ' + (-days) + ' 天）';
+            dom.dateHint.classList.add('hint-warn');
+        } else if (days === 0) {
+            dom.dateHint.textContent = '今天到期，请留意';
+            dom.dateHint.classList.add('hint-soon');
+        } else if (days <= 30) {
+            dom.dateHint.textContent = '还有 ' + days + ' 天到期';
+            dom.dateHint.classList.add('hint-soon');
+        } else {
+            dom.dateHint.textContent = '有效期正常，还有 ' + days + ' 天';
+        }
+    }
+
+    function collectPhotos() {
+        var photos = [];
+        PACK_KEYS.forEach(function (key) {
+            if (state.draft.photos[key]) {
+                photos.push({ label: PACK_LABELS[key], dataUrl: state.draft.photos[key] });
+            }
+        });
+        return photos;
+    }
+
+    function validateAndCollect() {
+        var valid = true;
+        var firstFocus = null;
+
+        var hasFront = !!state.draft.photos['pack-front'];
+        if (!hasFront) {
+            showError(dom.photoError);
+            valid = false;
+            firstFocus = document.querySelector('[data-photo-key="pack-front"]');
+        } else {
+            hideError(dom.photoError);
+        }
+
+        var name = dom.nameInput.value.trim();
+        if (!name) {
+            showError(dom.nameError);
+            valid = false;
+            if (!firstFocus) {
+                firstFocus = dom.nameInput;
+            }
+        } else {
+            hideError(dom.nameError);
+        }
+
+        var location = dom.locationInput.value.trim();
+        if (!location) {
+            showError(dom.locationError);
+            valid = false;
+            if (!firstFocus) {
+                firstFocus = dom.locationInput;
+            }
+        } else {
+            hideError(dom.locationError);
+        }
+
+        var expiry = dom.expiryInput.value;
+        if (!expiry || daysUntil(expiry) === null) {
+            showError(dom.expiryError);
+            valid = false;
+            if (!firstFocus) {
+                firstFocus = dom.expiryInput;
+            }
+        } else {
+            hideError(dom.expiryError);
+        }
+
+        if (!valid) {
+            showToast('请补全带 * 的项目');
+            if (firstFocus) {
+                firstFocus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                try {
+                    firstFocus.focus({ preventScroll: true });
+                } catch (error) {
+                    firstFocus.focus();
+                }
+            }
+            return null;
+        }
+
+        return {
+            name: name,
+            location: location,
+            expiry: expiry,
+            notes: dom.notesInput.value.trim(),
+            photos: collectPhotos(),
+            storagePhoto: state.draft.storagePhoto
+        };
+    }
+
+    async function saveCurrentMedicine() {
+        if (state.saveInProgress) {
+            return;
+        }
+        var data = validateAndCollect();
+        if (!data) {
+            return;
+        }
+
+        state.saveInProgress = true;
+        dom.saveButton.disabled = true;
+        dom.saveButton.textContent = '保存中…';
+
+        var existing = state.editingId ? findMed(state.editingId) : null;
+        var now = new Date().toISOString();
+        var medicine = {
+            id: existing ? existing.id : newId(),
+            name: data.name,
+            location: data.location,
+            expiry: data.expiry,
+            notes: data.notes,
+            photos: data.photos,
+            storagePhoto: data.storagePhoto,
+            createdAt: existing ? existing.createdAt : now,
+            updatedAt: now
+        };
+
+        var next;
+        if (existing) {
+            next = state.meds.map(function (med) {
+                return med.id === existing.id ? medicine : med;
+            });
+        } else {
+            next = state.meds.concat([medicine]);
+        }
+
+        try {
+            await persistMeds(next);
+            state.meds = next;
+            syncReminders(next);
+            state.dirty = false;
+            closeEditor();
+            showToast(existing ? '药品信息已保存' : '药品已添加');
+        } catch (error) {
+            console.error(error);
+            showToast('保存失败，请检查本机存储空间后重试');
+            dom.saveButton.disabled = false;
+            dom.saveButton.textContent = '保存药品';
+        } finally {
+            state.saveInProgress = false;
+        }
+    }
+
+    function requestDeleteMedicine() {
+        if (!state.editingId) {
+            return;
+        }
+        var med = findMed(state.editingId);
+        if (!med) {
+            return;
+        }
+        showConfirm({
+            title: '删除这份药品？',
+            message: '删除「' + med.name + '」后，包装照片和记录都会从手机中删除。',
+            okText: '删除',
+            cancelText: '取消',
+            onOk: function () {
+                deleteMedicine(med);
+            }
+        });
+    }
+
+    async function deleteMedicine(med) {
+        var next = state.meds.filter(function (item) { return item.id !== med.id; });
+        try {
+            await persistMeds(next);
+            state.meds = next;
+            syncReminders(next);
+            state.dirty = false;
+            closeEditor();
+            showToast('药品已删除');
+        } catch (error) {
+            console.error(error);
+            showToast('删除失败，请重试');
+        }
+    }
+
+    function findMed(id) {
+        for (var i = 0; i < state.meds.length; i++) {
+            if (state.meds[i].id === id) {
+                return state.meds[i];
+            }
+        }
+        return null;
+    }
+
+    // ---------- 查看药品 ----------
+
+    function openDetail(med) {
+        state.detailId = med.id;
+        dom.detailTitle.textContent = '查看药品';
+        dom.detailSubtitle.textContent = '包装照片与药品信息';
+        dom.detailScroll.innerHTML = detailHtml(med);
+        dom.homeView.hidden = true;
+        dom.editorView.hidden = true;
+        dom.detailView.hidden = false;
+        document.body.classList.add('editor-open');
+        dom.detailScroll.scrollTop = 0;
+    }
+
+    function closeDetail() {
+        dom.detailView.hidden = true;
+        dom.homeView.hidden = false;
+        document.body.classList.remove('editor-open');
+        state.detailId = null;
+        dom.detailScroll.innerHTML = '';
+        renderAll();
+    }
+
+    function detailHtml(med) {
+        var status = expiryStatus(med.expiry);
+        var name = escapeHtml(med.name);
+        var photos = med.photos || [];
+        var notes = (med.notes || '').trim();
+
+        var photoHtml = photos.map(function (photo, index) {
+            var label = escapeHtml(photo.label || '照片');
+            return '<button type="button" class="detail-photo" data-view-photo="' + index + '" aria-label="查看' + name + label + '照片">' +
+                '<img src="' + escapeHtml(photo.dataUrl) + '" alt="' + name + label + '照片" loading="lazy">' +
+                '<span class="detail-photo-label">' + label + '</span>' +
+                '</button>';
+        }).join('');
+
+        var storageHtml = med.storagePhoto
+            ? '<button type="button" class="detail-storage-photo" data-view-storage aria-label="查看存放位置照片">' +
+                '<img src="' + escapeHtml(med.storagePhoto) + '" alt="药品存放位置照片" loading="lazy">' +
+                '<span class="detail-photo-label">存放位置</span>' +
+                '</button>'
+            : '<p class="detail-empty">未拍摄存放位置照片</p>';
+
+        return '<div class="detail-body">' +
+            '<div class="detail-hero ' + status.key + '">' +
+                '<h2 class="detail-name">' + name + '</h2>' +
+                '<span class="status-badge ' + status.key + '">' + escapeHtml(status.badge) + '</span>' +
+            '</div>' +
+            '<div class="detail-info">' +
+                '<div class="meta-row">' +
+                    '<div class="meta-item">' + ICON_LOCATION + '<span><strong>存放位置：</strong>' + escapeHtml(med.location) + '</span></div>' +
+                    '<div class="meta-item">' + ICON_CALENDAR + '<span><strong>有效期至：</strong>' + formatDate(med.expiry) + '</span></div>' +
+                '</div>' +
+            '</div>' +
+            (photos.length
+                ? '<section class="detail-section"><h3>包装照片（' + photos.length + ' 张）</h3><div class="detail-photo-grid">' + photoHtml + '</div></section>'
+                : '<section class="detail-section"><h3>包装照片</h3><p class="detail-empty">暂无包装照片</p></section>') +
+            '<section class="detail-section"><h3>存放位置照片</h3>' + storageHtml + '</section>' +
+            '<section class="detail-section"><h3>包装上的说明</h3>' +
+                (notes ? '<p class="detail-note">' + escapeHtml(notes) + '</p>' : '<p class="detail-empty">未填写</p>') +
+            '</section>' +
+            '</div>';
+    }
+
+    function onDetailClick(event) {
+        var photoButton = event.target.closest('[data-view-photo]');
+        if (photoButton) {
+            var med = findMed(state.detailId);
+            if (!med) {
+                return;
+            }
+            var index = Number(photoButton.dataset.viewPhoto);
+            var photo = (med.photos || [])[index];
+            if (photo) {
+                openPhotoViewer(photo.dataUrl, med.name + ' · ' + (photo.label || '照片'));
+            }
+            return;
+        }
+
+        var storageButton = event.target.closest('[data-view-storage]');
+        if (storageButton) {
+            var storageMed = findMed(state.detailId);
+            if (storageMed && storageMed.storagePhoto) {
+                openPhotoViewer(storageMed.storagePhoto, storageMed.name + ' · 存放位置');
+            }
+        }
+    }
+
+    // ---------- 语音 ----------
+
+    function speakMedicine(med) {
+        var status = expiryStatus(med.expiry);
+        var message;
+        var toastText;
+        if (status.key === 'expired') {
+            message = '药品已过期，请勿食用';
+            toastText = '已语音提醒：药品已过期，请勿食用';
+        } else {
+            message = '药品名称：' + med.name
+                + '。存放位置：' + med.location
+                + '。有效期至：' + formatDate(med.expiry);
+            toastText = '已播报药品信息';
+        }
+        speakText(message, toastText);
+    }
+
+    function speakText(message, toastText) {
+        if (isNative && typeof android.speak === 'function') {
+            try {
+                android.speak(message);
+                showToast(toastText);
+                return;
+            } catch (error) {
+                console.warn(error);
+            }
+        }
+
+        if ('speechSynthesis' in window) {
+            try {
+                window.speechSynthesis.cancel();
+                var utterance = new SpeechSynthesisUtterance(message);
+                utterance.lang = 'zh-CN';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+                showToast(toastText);
+            } catch (error) {
+                showToast('当前手机无法播放语音');
+            }
+        } else {
+            showToast('当前手机无法播放语音');
+        }
+    }
+
+    // ---------- 紧急呼叫 ----------
+
+    function loadEmergencyNumber() {
+        if (isNative && typeof android.getSetting === 'function') {
+            try {
+                var value = android.getSetting(EMERGENCY_SETTING_KEY);
+                if (value) {
+                    state.emergencyNumber = value;
+                }
+            } catch (error) {
+                console.warn(error);
+            }
+        } else {
+            try {
+                var saved = window.localStorage.getItem(LS_EMERGENCY_KEY);
+                if (saved) {
+                    state.emergencyNumber = saved;
+                }
+            } catch (error) {
+                console.warn(error);
+            }
+        }
+    }
+
+    function saveEmergencyNumber(value) {
+        state.emergencyNumber = value;
+        if (isNative && typeof android.setSetting === 'function') {
+            try {
+                android.setSetting(EMERGENCY_SETTING_KEY, value);
+            } catch (error) {
+                console.warn(error);
+            }
+        }
+        try {
+            window.localStorage.setItem(LS_EMERGENCY_KEY, value);
+        } catch (error) {
+            console.warn(error);
+        }
+    }
+
+    function openEmergencyModal() {
+        loadEmergencyNumber();
+        dom.emergencyNumber.value = state.emergencyNumber;
+        dom.emergencyModal.hidden = false;
+        document.body.classList.add('modal-open');
+        window.setTimeout(function () {
+            dom.emergencyNumber.focus();
+            dom.emergencyNumber.select();
+        }, 50);
+    }
+
+    function closeEmergencyModal() {
+        dom.emergencyModal.hidden = true;
+        if (dom.confirmModal.hidden && dom.photoViewer.hidden) {
+            document.body.classList.remove('modal-open');
+        }
+    }
+
+    function callEmergencyNumber() {
+        var number = dom.emergencyNumber.value.trim();
+        if (!number) {
+            showToast('请输入紧急电话号码');
+            dom.emergencyNumber.focus();
+            return;
+        }
+        saveEmergencyNumber(number);
+        closeEmergencyModal();
+
+        if (isNative && typeof android.callEmergency === 'function') {
+            try {
+                android.callEmergency(number);
+            } catch (error) {
+                console.warn(error);
+                showToast('无法拨打电话');
+            }
+            return;
+        }
+        try {
+            window.location.href = 'tel:' + encodeURIComponent(number);
+        } catch (error) {
+            showToast('无法拨打电话');
+        }
+    }
+
+    // ---------- 联网查询 ----------
+
+    function refreshOnlineState() {
+        var online;
+        if (isNative && typeof android.isOnline === 'function') {
+            try {
+                online = !!android.isOnline();
+            } catch (error) {
+                online = navigator.onLine;
+            }
+        } else {
+            online = navigator.onLine;
+        }
+        state.online = online;
+
+        dom.onlineHint.hidden = false;
+        dom.onlineHint.classList.toggle('online', !!online);
+        dom.onlineHint.classList.toggle('offline', !online);
+        dom.onlineHintText.textContent = online
+            ? '已联网，可查询未入库药品的官方信息'
+            : '当前离线，联网后可查询未入库药品';
+
+        renderCardsOnly();
+    }
+
+    function openOfficialSearch(name) {
+        var query = String(name || '').trim();
+        if (!query) {
+            return;
+        }
+        if (isNative && typeof android.openOfficialSearch === 'function') {
+            try {
+                android.openOfficialSearch(query);
+            } catch (error) {
+                console.warn(error);
+            }
+            return;
+        }
+        try {
+            var url = 'https://www.nmpa.gov.cn/datasearch/search-result.html?searchkey=' + encodeURIComponent(query);
+            window.open(url, '_blank');
+        } catch (error) {
+            showToast('无法打开联网查询页面');
+        }
+    }
+
+    // ---------- 通知权限 ----------
+
+    function initNotificationBanner() {
+        refreshNotificationBanner();
+    }
+
+    function refreshNotificationBanner() {
+        if (isNative) {
+            if (typeof android.areNotificationsAllowed !== 'function') {
+                hideNotificationBanner();
+                return;
+            }
+            var allowed = true;
+            try {
+                allowed = !!android.areNotificationsAllowed();
+            } catch (error) {
+                console.warn(error);
+            }
+            dom.notificationBanner.hidden = allowed;
+            if (allowed) {
+                syncReminders(state.meds);
+            }
+            return;
+        }
+
+        if ('Notification' in window) {
+            dom.notificationBanner.hidden = Notification.permission !== 'default';
+        } else {
+            hideNotificationBanner();
+        }
+    }
+
+    function hideNotificationBanner() {
+        if (dom.notificationBanner) {
+            dom.notificationBanner.hidden = true;
+        }
+    }
+
+    // ---------- 查看器与确认框 ----------
+
+    function openPhotoViewer(src, caption) {
+        dom.viewerImage.src = src;
+        dom.viewerCaption.textContent = caption || '';
+        dom.photoViewer.hidden = false;
+        document.body.classList.add('modal-open');
+    }
+
+    function closePhotoViewer() {
+        dom.photoViewer.hidden = true;
+        dom.viewerImage.removeAttribute('src');
+        if (dom.confirmModal.hidden && dom.emergencyModal.hidden) {
+            document.body.classList.remove('modal-open');
+        }
+    }
+
+    function showConfirm(options) {
+        dom.confirmTitle.textContent = options.title || '确认';
+        dom.confirmMessage.textContent = options.message || '';
+        dom.confirmOk.textContent = options.okText || '确定';
+        dom.confirmCancel.textContent = options.cancelText || '取消';
+        state.confirmAction = options.onOk || null;
+        dom.confirmModal.hidden = false;
+        document.body.classList.add('modal-open');
+        window.setTimeout(function () {
+            dom.confirmCancel.focus();
+        }, 30);
+    }
+
+    function closeConfirm() {
+        dom.confirmModal.hidden = true;
+        state.confirmAction = null;
+        if (dom.photoViewer.hidden && dom.emergencyModal.hidden) {
+            document.body.classList.remove('modal-open');
+        }
+    }
+
+    function showToast(message) {
+        if (!dom.toast) {
+            return;
+        }
+        dom.toast.textContent = message;
+        dom.toast.hidden = false;
+        if (state.toastTimer) {
+            window.clearTimeout(state.toastTimer);
+        }
+        state.toastTimer = window.setTimeout(function () {
+            dom.toast.hidden = true;
+        }, 2400);
+    }
+
+    // ---------- 工具函数 ----------
+
+    function showError(element) {
+        if (element) {
+            element.hidden = false;
+        }
+    }
+
+    function hideError(element) {
+        if (element) {
+            element.hidden = true;
+        }
+    }
+
+    function escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function (character) {
+            return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[character];
+        });
+    }
+
+    // ---------- Android 回调 ----------
+
+    window.onNativePhotoResult = function (key, dataUrl, error) {
+        resetPhotoLoading(key);
+        state.pendingPhotoKey = null;
+        if (dataUrl) {
+            applyPhoto(key, dataUrl);
+            return;
+        }
+        if (error && error !== 'cancel' && error !== 'cancelled') {
+            showToast('照片读取失败，请重试');
+        }
+    };
+
+    window.onAndroidResume = function () {
+        if (!state.initialized) {
+            return;
+        }
+        refreshNotificationBanner();
+        refreshOnlineState();
+        syncReminders(state.meds);
+    };
+
+    window.appHandleBack = function () {
+        if (dom.searchInput && (dom.searchInput.value.trim() || document.activeElement === dom.searchInput)) {
+            resetFilters();
+            dom.searchInput.blur();
+            return true;
+        }
+        if (!dom.photoViewer.hidden) {
+            closePhotoViewer();
+            return true;
+        }
+        if (!dom.emergencyModal.hidden) {
+            closeEmergencyModal();
+            return true;
+        }
+        if (!dom.confirmModal.hidden) {
+            closeConfirm();
+            return true;
+        }
+        if (!dom.detailView.hidden) {
+            closeDetail();
+            return true;
+        }
+        if (!dom.editorView.hidden) {
+            requestCloseEditor();
+            return true;
+        }
+        return false;
+    };
+
+    // ---------- 演示数据 ----------
+
+    function applyDemoView() {
+        var view = params.get('view');
+        if (view === 'add') {
+            openEditor(null);
+        } else if (view === 'edit' && state.meds.length > 0) {
+            openEditor(state.meds[0]);
+        } else if (view === 'detail' && state.meds.length > 0) {
+            openDetail(state.meds[0]);
+        }
+    }
+
+    function demoMeds() {
+        var today = new Date();
+        return [
+            {
+                id: 'demo-expired',
+                name: '苯磺酸氨氯地平片',
+                location: '客厅电视柜第二层',
+                expiry: formatInputDate(addDays(today, -8)),
+                notes: '包装标注：5mg × 28片，遮光、密封保存。',
+                photos: [
+                    { label: '正面', dataUrl: demoPhoto('苯磺酸氨氯地平片', '降压药 5mg × 28片', '#B43E3D') },
+                    { label: '背面', dataUrl: demoPhoto('苯磺酸氨氯地平片', '包装背面成分与批号信息', '#8C2F2E') },
+                    { label: '左侧', dataUrl: demoPhoto('苯磺酸氨氯地平片', '包装左侧说明', '#9E3A39') }
+                ],
+                storagePhoto: demoPhoto('家庭药品箱', '客厅电视柜第二层', '#3F7D56'),
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            },
+            {
+                id: 'demo-soon',
+                name: '阿托伐他汀钙片',
+                location: '卧室床头柜抽屉',
+                expiry: formatInputDate(addDays(today, 12)),
+                notes: '包装标注：20mg × 14片，遮光、密封保存。',
+                photos: [
+                    { label: '正面', dataUrl: demoPhoto('阿托伐他汀钙片', '降脂药 20mg × 14片', '#2C6B96') },
+                    { label: '背面', dataUrl: demoPhoto('阿托伐他汀钙片', '包装背面批号与储藏说明', '#235474') }
+                ],
+                storagePhoto: '',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            },
+            {
+                id: 'demo-normal',
+                name: '盐酸二甲双胍片',
+                location: '厨房餐边柜上层',
+                expiry: formatInputDate(addDays(today, 160)),
+                notes: '包装标注：0.5g × 20片，密封、在阴凉干燥处保存。',
+                photos: [
+                    { label: '正面', dataUrl: demoPhoto('盐酸二甲双胍片', '降糖药 0.5g × 20片', '#3F7D56') },
+                    { label: '背面', dataUrl: demoPhoto('盐酸二甲双胍片', '包装背面批号与储藏说明', '#306343') }
+                ],
+                storagePhoto: '',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }
+        ];
+    }
+
+    function addDays(date, days) {
+        var copy = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        copy.setDate(copy.getDate() + days);
+        return copy;
+    }
+
+    function demoPhoto(title, subtitle, color) {
+        var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="760" height="570" viewBox="0 0 760 570">' +
+            '<rect width="760" height="570" fill="#E9EFEA"/>' +
+            '<rect x="92" y="70" width="576" height="430" rx="12" fill="#FFFFFF" stroke="#D4DFD7"/>' +
+            '<rect x="92" y="70" width="576" height="108" rx="12" fill="' + color + '"/>' +
+            '<rect x="92" y="148" width="576" height="30" fill="' + color + '"/>' +
+            '<text x="122" y="138" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="34" font-weight="700" fill="#FFFFFF">' + escapeXml(title) + '</text>' +
+            '<text x="122" y="232" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" fill="#39483E">' + escapeXml(subtitle) + '</text>' +
+            '<line x1="122" y1="264" x2="638" y2="264" stroke="#E2EAE4" stroke-width="2"/>' +
+            '<text x="122" y="318" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" fill="#718177">包装照片</text>' +
+            '<text x="122" y="354" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" fill="#718177">请以实际包装信息为准</text>' +
+            '</svg>';
+        return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+    }
+
+    function escapeXml(value) {
+        return String(value == null ? '' : value).replace(/[<>&"']/g, function (character) {
+            return {
+                '<': '&lt;',
+                '>': '&gt;',
+                '&': '&amp;',
+                '"': '&quot;',
+                "'": '&apos;'
+            }[character];
+        });
+    }
+})();
+
+</script>
+</body>
+</html>

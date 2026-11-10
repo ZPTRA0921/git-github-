@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#20523D">
+    <meta name="format-detection" content="telephone=no">
+    <title>老人药品助手</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%23FFFFFF'/%3E%3Ctext%20x='32'%20y='45'%20font-family='Microsoft%20YaHei,%20sans-serif'%20font-size='40'%20font-weight='700'%20text-anchor='middle'%20fill='%23000000'%3E%E8%8D%AF%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <section id="homeView" class="view home-view">
+            <header class="app-header">
+                <div class="brand">
+                    <span class="brand-icon" aria-hidden="true">药</span>
+                    <div class="brand-copy">
+                        <h1>老人药品助手</h1>
+                        <p>药品照片 · 有效期提醒</p>
+                    </div>
+                </div>
+                <button type="button" class="emergency-button" id="emergencyButton" aria-label="紧急呼叫">紧急呼叫</button>
+            </header>
+
+            <main class="page home-page">
+                <div class="location-filter" id="locationFilterBox">
+                    <span class="field-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+                            <circle cx="12" cy="10" r="2.6" />
+                        </svg>
+                    </span>
+                    <div class="location-select-wrap">
+                        <label for="locationFilter">药品存放位置</label>
+                        <select id="locationFilter" aria-label="按药品存放位置筛选">
+                            <option value="">全部位置</option>
+                        </select>
+                    </div>
+                    <span class="select-chevron" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5" /></svg>
+                    </span>
+                </div>
+
+                <div class="search-box">
+                    <span class="search-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="10.8" cy="10.8" r="6.8" />
+                            <path d="m16 16 4.2 4.2" />
+                        </svg>
+                    </span>
+                    <input id="searchInput" type="search" placeholder="输入关键词：药名或位置" autocomplete="off" aria-label="药品关键词搜索" />
+                    <button type="button" class="clear-search" id="clearSearch" aria-label="清除搜索" hidden>×</button>
+                </div>
+
+                <div class="online-hint" id="onlineHint" hidden>
+                    <span class="online-dot"></span>
+                    <span id="onlineHintText">联网状态检查中</span>
+                </div>
+
+                <div class="filter-row" role="group" aria-label="药品状态筛选">
+                    <button type="button" class="filter-chip active" data-filter="all">
+                        <span>全部药品</span><b id="countAll">0</b>
+                    </button>
+                    <button type="button" class="filter-chip" data-filter="soon">
+                        <span>快过期</span><b id="countSoon">0</b>
+                    </button>
+                    <button type="button" class="filter-chip" data-filter="expired">
+                        <span>已过期</span><b id="countExpired">0</b>
+                    </button>
+                </div>
+
+                <div class="notice-banner" id="notificationBanner" hidden>
+                    <span class="notice-icon" aria-hidden="true">!</span>
+                    <span class="notice-text">手机通知未开启，过期时可能收不到提醒。</span>
+                    <button type="button" id="notificationButton">去开启</button>
+                </div>
+
+                <section class="medicine-section" aria-labelledby="myMedicineTitle">
+                    <div class="section-heading">
+                        <h2 id="myMedicineTitle">我的药品</h2>
+                        <span id="listSummary">共 0 种</span>
+                    </div>
+                    <button type="button" class="add-medicine-button" id="addButtonBottom">
+                        <span class="add-button-plus" aria-hidden="true">＋</span>
+                        <span>添加药品</span>
+                    </button>
+                    <div id="medicineList" class="medicine-list"></div>
+                </section>
+
+                <p class="legal-note">本软件只保存药品包装信息和有效期，不提供用药指导。<br>请以药品包装、医生或药师的说明为准。</p>
+            </main>
+        </section>
+
+        <section id="editorView" class="view editor-view" hidden>
+            <header class="editor-header">
+                <button type="button" class="back-button" id="backButton" aria-label="返回">
+                    <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+                <div class="editor-heading">
+                    <h2 id="editorTitle">添加药品</h2>
+                    <p>全方位拍照 · 手动补充信息</p>
+                </div>
+                <button type="button" class="delete-link" id="deleteButton" hidden>删除</button>
+            </header>
+
+            <div class="editor-scroll" id="editorScroll">
+                <section class="form-card photo-card">
+                    <div class="form-card-heading">
+                        <div>
+                            <h3>包装照片（全方位）</h3>
+                            <p>正面为必填，其余角度尽量拍全，字迹清楚</p>
+                        </div>
+                        <span class="required-pill">正面必填</span>
+                    </div>
+                    <div class="photo-grid">
+                        <button type="button" class="photo-tile" data-photo-key="pack-front" aria-label="拍摄药品包装正面">
+                            <span class="photo-side-label">正面</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄正面</span>
+                                <span class="photo-empty-sub">必填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装正面" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                        <button type="button" class="photo-tile" data-photo-key="pack-back" aria-label="拍摄药品包装背面">
+                            <span class="photo-side-label">背面</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄背面</span>
+                                <span class="photo-empty-sub">选填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装背面" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                        <button type="button" class="photo-tile" data-photo-key="pack-left" aria-label="拍摄药品包装左侧">
+                            <span class="photo-side-label">左侧</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄左侧</span>
+                                <span class="photo-empty-sub">选填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装左侧" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                        <button type="button" class="photo-tile" data-photo-key="pack-right" aria-label="拍摄药品包装右侧">
+                            <span class="photo-side-label">右侧</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄右侧</span>
+                                <span class="photo-empty-sub">选填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装右侧" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                        <button type="button" class="photo-tile" data-photo-key="pack-top" aria-label="拍摄药品包装顶部">
+                            <span class="photo-side-label">顶部</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄顶部</span>
+                                <span class="photo-empty-sub">选填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装顶部" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                        <button type="button" class="photo-tile" data-photo-key="pack-bottom" aria-label="拍摄药品包装底部">
+                            <span class="photo-side-label">底部</span>
+                            <span class="photo-empty">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span class="photo-empty-title">拍摄底部</span>
+                                <span class="photo-empty-sub">选填</span>
+                            </span>
+                            <img class="photo-image" alt="药品包装底部" hidden />
+                            <span class="photo-retake" hidden>重拍</span>
+                            <span class="photo-loading" hidden>处理中…</span>
+                        </button>
+                    </div>
+                    <p class="field-error" id="photoError" hidden>请至少拍摄包装正面照片</p>
+                </section>
+
+                <section class="form-card">
+                    <div class="form-card-heading">
+                        <div>
+                            <h3>药品信息</h3>
+                            <p>根据包装手动补充，带 * 为必填</p>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nameInput">药品名称 <em>*</em></label>
+                        <input id="nameInput" type="text" maxlength="80" placeholder="请输入药品名称" autocomplete="off" />
+                        <p class="field-error" id="nameError" hidden>请填写药品名称</p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="locationInput">存放位置 <em>*</em></label>
+                        <input id="locationInput" type="text" maxlength="60" placeholder="例如：客厅电视柜第二层" autocomplete="off" />
+                        <p class="field-error" id="locationError" hidden>请填写药品存放位置</p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="expiryInput">有效期至 <em>*</em></label>
+                        <input id="expiryInput" type="date" min="2000-01-01" max="2100-12-31" />
+                        <p class="field-hint" id="dateHint">请按包装上的有效期填写</p>
+                        <p class="field-error" id="expiryError" hidden>请选择有效期</p>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="notesInput">包装上的说明 <span class="optional">（照录，选填）</span></label>
+                        <textarea id="notesInput" maxlength="1000" rows="4" placeholder="只录入包装盒上的原文，不要自行添加用药建议"></textarea>
+                        <p class="field-hint">本软件不提供用药方法和指导。</p>
+                    </div>
+                </section>
+
+                <section class="form-card storage-card">
+                    <div class="form-card-heading">
+                        <div>
+                            <h3>存放位置照片</h3>
+                            <p>药品集体放在家庭药品箱时，可拍药品箱</p>
+                        </div>
+                        <span class="optional-pill">选填</span>
+                    </div>
+                    <button type="button" class="storage-tile" id="storageTile" data-photo-key="storage" aria-label="拍摄药品存放位置">
+                        <span class="storage-empty">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+                                <circle cx="12" cy="10" r="2.6" />
+                            </svg>
+                            <span class="photo-empty-title">拍摄存放位置 / 药品箱</span>
+                            <span class="photo-empty-sub">选填</span>
+                        </span>
+                        <img class="photo-image" alt="药品存放位置照片" hidden />
+                        <span class="photo-retake" hidden>重拍</span>
+                        <span class="photo-loading" hidden>处理中…</span>
+                    </button>
+                </section>
+
+                <p class="editor-note">
+                    照片和资料只保存在本机，不会上传网络。<br>
+                    过期提醒通过手机系统通知发送，不是短信。
+                </p>
+            </div>
+
+            <div class="editor-footer">
+                <button type="button" class="save-button" id="saveButton">保存药品</button>
+            </div>
+        </section>
+
+        <section id="detailView" class="view detail-view" hidden>
+            <header class="editor-header">
+                <button type="button" class="back-button" id="detailBack" aria-label="返回">
+                    <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+                <div class="editor-heading">
+                    <h2 id="detailTitle">查看药品</h2>
+                    <p id="detailSubtitle">包装照片与药品信息</p>
+                </div>
+            </header>
+            <div class="detail-scroll" id="detailScroll"></div>
+        </section>
+    </div>
+
+    <div class="overlay photo-viewer" id="photoViewer" hidden>
+        <button type="button" class="overlay-close" id="closePhotoViewer" aria-label="关闭照片">×</button>
+        <div class="viewer-content">
+            <img id="viewerImage" alt="药品包装照片" />
+            <p id="viewerCaption">药品包装照片</p>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="confirmModal" hidden>
+        <div class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+            <h3 id="confirmTitle">确认</h3>
+            <p id="confirmMessage"></p>
+            <div class="confirm-actions">
+                <button type="button" class="button-secondary" id="confirmCancel">取消</button>
+                <button type="button" class="button-danger" id="confirmOk">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="emergencyModal" hidden>
+        <div class="confirm-dialog emergency-dialog" role="dialog" aria-modal="true" aria-labelledby="emergencyTitle">
+            <h3 id="emergencyTitle">紧急呼叫</h3>
+            <p id="emergencyMessage">拨打紧急电话前，请确认号码正确。</p>
+            <input id="emergencyNumber" type="tel" inputmode="tel" maxlength="20" placeholder="请输入紧急电话号码" />
+            <div class="confirm-actions">
+                <button type="button" class="button-secondary" id="emergencyCancel">取消</button>
+                <button type="button" class="button-danger" id="emergencyOk">呼叫</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" hidden></div>
+
+    <input type="file" id="photoFileInput" accept="image/*" hidden />
+
+    <script src="app.js"></script>
+</body>
+</html>
